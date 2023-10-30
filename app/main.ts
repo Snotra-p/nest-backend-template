@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { Logger } from '@nestjs/common';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -12,9 +12,11 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  await app.listen(3000, process.env.HOST_IP);
+  // const app = await NestFactory.create(AppModule);
+
+  await app.listen(Number(process.env.HOST_PORT), process.env.HOST_IP);
 
   Logger.log(`NODE_ENV is ${process.env.NODE_ENV}`);
-  Logger.log(`running in ${process.env.HOST_IP}:3000`);
+  Logger.log(`running in ${process.env.HOST_IP}:${process.env.HOST_PORT}`);
 }
 bootstrap();

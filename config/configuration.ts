@@ -1,7 +1,13 @@
 import * as Joi from 'joi';
 
+enum NODE_ENVIRONMENT {
+  LOCAL = 'local',
+  DEV = 'dev',
+  PROD = 'prod',
+}
+
 export const configuration = (): EnvironmentVariables => ({
-  ip: process.env.HOST_IP || 'localhost',
+  ip: process.env.HOST_IP,
   port: parseInt(process.env.HOST_PORT, 10),
   database: {
     host: process.env.DB_HOST,
@@ -10,6 +16,7 @@ export const configuration = (): EnvironmentVariables => ({
 });
 
 export const validationSchema = Joi.object({
+  NODE_ENV: Joi.string().valid(...Object.values(NODE_ENVIRONMENT)),
   HOST_IP: Joi.string().required(),
   HOST_PORT: Joi.number().required(),
   DB_HOST: Joi.string().required(),
