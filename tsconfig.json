@@ -8,7 +8,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
+    "target": "ES2022",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -20,12 +20,18 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/logger": [
+      "@libs/*": [
+        "libs/*"
+      ],
+      "@libs/logger": [
         "libs/logger/src"
       ],
-      "@app/logger/*": [
+      "@libs/logger/*": [
         "libs/logger/src/*"
-      ]
+      ],
+      "@config/*": [
+        "config/*"
+      ],
     }
   }
 }

@@ -1,17 +1,35 @@
 import * as Joi from 'joi';
-
-enum NODE_ENVIRONMENT {
-  LOCAL = 'local',
-  DEV = 'dev',
-  PROD = 'prod',
-}
+import { DATABASE_NAME, NODE_ENVIRONMENT } from './constants';
 
 export const configuration = (): EnvironmentVariables => ({
+  env: process.env.NODE_ENV,
   ip: process.env.HOST_IP,
   port: parseInt(process.env.HOST_PORT, 10),
+  sessionKeys: [
+    Buffer.from(process.env.SESSION_COOKIE_KEY, 'hex'),
+    Buffer.from(process.env.SESSION_COOKIE_KEY_OLD, 'hex'),
+  ],
   database: {
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10),
+    [DATABASE_NAME.COMMON]: {
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_ID,
+      password: process.env.DB_PW,
+      database: process.env.DB_NAME,
+      entities: ['dist/app/user/entities/*.entity.!(js.map){,+(ts,js)}'],
+      synchronize: true,
+    },
+    [DATABASE_NAME.ADMIN]: {
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_ID,
+      password: process.env.DB_PW,
+      database: process.env.DB_NAME,
+      entities: ['dist/app/user/entities/*.entity.!(js.map){,+(ts,js)}'],
+      synchronize: true,
+    },
   },
 });
 
@@ -21,15 +39,38 @@ export const validationSchema = Joi.object({
   HOST_PORT: Joi.number().required(),
   DB_HOST: Joi.string().required(),
   DB_PORT: Joi.number().required(),
+  DB_ID: Joi.string().required(),
+  DB_PW: Joi.string().required(),
+  DB_NAME: Joi.string().required(),
+  SESSION_COOKIE_KEY: Joi.string().required(),
+  SESSION_COOKIE_KEY_OLD: Joi.string().required(),
 });
 
+export const configModuleOptions = {
+  isGlobal: true,
+  envFilePath:
+    process.env.NODE_ENV === NODE_ENVIRONMENT.PROD
+      ? null
+      : `config/.${process.env.NODE_ENV}.env`,
+  load: [configuration],
+  validationSchema: validationSchema,
+};
+
 export type DatabaseConfig = {
+  type: 'mysql' | 'pg';
   host: string;
   port: number;
+  username: string;
+  password: string;
+  database: string;
+  entities: string[];
+  synchronize: boolean;
 };
 
 export type EnvironmentVariables = {
+  env: string;
   ip: string;
   port: number;
-  database: DatabaseConfig;
+  database: Record<string, DatabaseConfig>;
+  sessionKeys: Buffer[];
 };

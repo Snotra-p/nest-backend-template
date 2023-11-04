@@ -4,14 +4,15 @@
     "json",
     "ts"
   ],
-  "rootDir": ".",
+  "rootDir": "../..",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
-    "@app/logger/(.*)": "<rootDir>/../libs/logger/src/$1",
-    "@app/logger": "<rootDir>/../libs/logger/src"
+    "^@libs(|/.*)$": "<rootDir>/libs/$1",
+    "^@libs/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
+    "^@config(|/.*)$": "<rootDir>/config/$1"
   }
 }
