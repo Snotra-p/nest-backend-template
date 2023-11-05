@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RootModule } from '../../root.module';
+import { RootModule } from '../../../../app/root.module';
 
 describe('base Test file for specific module', () => {
   let moduleFixture: TestingModule;

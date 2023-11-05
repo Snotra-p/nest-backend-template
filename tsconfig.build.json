@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.json",
   "exclude": ["node_modules",
-    "app/test", "dist", "**/*spec.ts"]
+    "libs/health-checker/test", "dist", "**/*spec.ts"]
 }

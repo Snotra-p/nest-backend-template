@@ -1,5 +1,27 @@
 import * as Joi from 'joi';
-import { DATABASE_NAME, NODE_ENVIRONMENT } from './constants';
+import {
+  DATABASE_NAME,
+  NODE_ENVIRONMENT,
+} from '@libs/common/src/constants/config';
+
+export type DatabaseConfig = {
+  type: 'mysql' | 'pg';
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  database: string;
+  entities: string[];
+  synchronize: boolean;
+};
+
+export type EnvironmentVariables = {
+  env: string;
+  ip: string;
+  port: number;
+  database: Record<string, DatabaseConfig>;
+  sessionKeys: Buffer[];
+};
 
 export const configuration = (): EnvironmentVariables => ({
   env: process.env.NODE_ENV,
@@ -54,23 +76,4 @@ export const configModuleOptions = {
       : `config/.${process.env.NODE_ENV}.env`,
   load: [configuration],
   validationSchema: validationSchema,
-};
-
-export type DatabaseConfig = {
-  type: 'mysql' | 'pg';
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  database: string;
-  entities: string[];
-  synchronize: boolean;
-};
-
-export type EnvironmentVariables = {
-  env: string;
-  ip: string;
-  port: number;
-  database: Record<string, DatabaseConfig>;
-  sessionKeys: Buffer[];
 };

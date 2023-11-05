@@ -12,7 +12,7 @@ import { NestFactory } from '@nestjs/core';
 import { RootModule } from './root.module';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from '@config/configuration';
-import { NODE_ENVIRONMENT } from '@config/constants';
+import { NODE_ENVIRONMENT } from '@libs/common/src/constants/config';
 import compression from '@fastify/compress';
 import secureSession from '@fastify/secure-session';
 
@@ -32,16 +32,8 @@ export class FastifyServer {
         .setTitle('star Server')
         .setDescription('API description')
         .setVersion('1.0')
-        .addBearerAuth(
-          {
-            type: 'http',
-            name: 'Authorization',
-            in: 'header',
-            description: 'Bearer token',
-          },
-          'basic',
-        )
         .build();
+
       const document = SwaggerModule.createDocument(this.app, swaggerConfig);
       SwaggerModule.setup('api-docs', this.app, document, {
         swaggerOptions: {
