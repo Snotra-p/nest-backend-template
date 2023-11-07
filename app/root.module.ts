@@ -1,18 +1,15 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { ClsModule } from 'nestjs-cls';
 
 import { UserModule } from './user/user.module';
-import { HealthModule } from '@libs/health-checker/src/health-module';
-import {
-  configModuleOptions,
-  EnvironmentVariables,
-} from '@config/configuration';
+import { HealthModule } from '@libs/common/src/module/health-checker/health-module';
+import { configModuleOptions } from '@config/configuration';
 import { AllErrorHandler } from '@libs/common/src/error/all-error-handler';
 import { AllExceptionFilter } from '@libs/common/src/filter/all-exception.filter';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DATABASE_NAME } from '@libs/common/src/constants/config';
+import { RedisModule } from '@libs/database/src/redis/redis.module';
+import { TypeOrmCustomModule } from '@libs/database/src/typeorm/type-orm-custom.module';
 
 const domainModules = [UserModule];
 
@@ -20,11 +17,8 @@ const domainModules = [UserModule];
   imports: [
     ClsModule.forRoot({ global: true, middleware: { mount: true } }),
     ConfigModule.forRoot(configModuleOptions),
-    TypeOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService<EnvironmentVariables>) =>
-        configService.get('database')[DATABASE_NAME.COMMON],
-      inject: [ConfigService],
-    }),
+    TypeOrmCustomModule,
+    RedisModule,
     HealthModule,
     ...domainModules,
   ],

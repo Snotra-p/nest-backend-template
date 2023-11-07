@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"app/**/*.ts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"libs/health-checker/test/**/*.ts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"libs/**/*.ts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"",
+    "format": "prettier --write \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"app/**/*.ts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"libs/common/src/module/health-checker/test/**/*.ts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\" \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"libs/**/*.ts\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"",
     "start": "NODE_ENV=local nest start",
     "start:dev": "NODE_ENV=dev nest start --watch",
     "start:debug": "NODE_ENV=dev nest start --debug --watch",
@@ -17,11 +17,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config libs/health-checker/test/jest-e2e.json"
+    "test:e2e": "jest --config libs/common/src/module/health-checker/test/jest-e2e.json"
   },
   "dependencies": {
     "@fastify/compress": "^6.5.0",
-    "@fastify/secure-session": "^7.1.0",
+    "@fastify/cookie": "^9.1.0",
+    "@fastify/session": "^10.5.0",
     "@fastify/static": "^6.12.0",
     "@nestjs/axios": "^3.0.1",
     "@nestjs/common": "^10.2.7",
@@ -38,6 +39,7 @@
     "class-validator": "^0.14.0",
     "compression": "^1.7.4",
     "express-session": "^1.17.3",
+    "ioredis": "^5.3.2",
     "joi": "^17.11.0",
     "mysql2": "^3.6.2",
     "nestjs-cls": "^3.6.0",
@@ -91,8 +93,9 @@
     ],
     "moduleNameMapper": {
       "^@libs(|/.*)$": "<rootDir>/libs/$1",
-      "^@libs/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
-      "^@config(|/.*)$": "<rootDir>/config/$1"
+      "^@config(|/.*)$": "<rootDir>/config/$1",
+      "^@common(|/.*)$": "<rootDir>/libs/common/src/$1",
+      "^@infra(|/.*)$": "<rootDir>/libs/infra/src/$1"
     }
   }
 }

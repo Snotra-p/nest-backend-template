@@ -15,11 +15,17 @@ export type DatabaseConfig = {
   synchronize: boolean;
 };
 
+export type RedisConfig = {
+  host: string;
+  port: number;
+};
+
 export type EnvironmentVariables = {
   env: string;
   ip: string;
   port: number;
   database: Record<string, DatabaseConfig>;
+  redis: RedisConfig;
   sessionKeys: Buffer[];
 };
 
@@ -53,6 +59,10 @@ export const configuration = (): EnvironmentVariables => ({
       synchronize: true,
     },
   },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT, 10),
+  },
 });
 
 export const validationSchema = Joi.object({
@@ -66,6 +76,8 @@ export const validationSchema = Joi.object({
   DB_NAME: Joi.string().required(),
   SESSION_COOKIE_KEY: Joi.string().required(),
   SESSION_COOKIE_KEY_OLD: Joi.string().required(),
+  REDIS_HOST: Joi.string().required(),
+  REDIS_PORT: Joi.number().required(),
 });
 
 export const configModuleOptions = {

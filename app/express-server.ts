@@ -8,6 +8,7 @@ import * as compression from 'compression';
 import { NestApplication, NestFactory } from '@nestjs/core';
 import { RootModule } from './root.module';
 
+// not implement yet
 export class ExpressServer {
   app: NestApplication;
   constructor() {}

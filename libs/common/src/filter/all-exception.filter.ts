@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 
 import { AllErrorHandler } from '../error/all-error-handler';
-import { ServerError } from '../error/server-error';
+import { ServerErrorException } from '../error/server-error-exception';
 import { HttpAdapterHost } from '@nestjs/core';
 
 @Catch(Error)
@@ -18,7 +18,7 @@ export class AllExceptionFilter implements ExceptionFilter {
     private errorHandler: AllErrorHandler,
   ) {}
 
-  catch(exception: Error, host: ArgumentsHost): void {
+  catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const { httpAdapter } = this.httpAdapterHost;
 
@@ -43,7 +43,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       );
     }
 
-    if (exception instanceof ServerError) {
+    if (exception instanceof ServerErrorException) {
       return this.errorHandler.serverExceptionHandle(exception, ctx);
     }
 
@@ -52,7 +52,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       message: 'critical error occur',
     };
 
-    Logger.error(exception.stack);
+    Logger.error((exception as Error).stack);
 
     return httpAdapter.reply(
       ctx.getResponse<Response>(),

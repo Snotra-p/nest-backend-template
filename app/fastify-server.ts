@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import {
   DocumentBuilder,
   SwaggerCustomOptions,
@@ -14,7 +13,9 @@ import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from '@config/configuration';
 import { NODE_ENVIRONMENT } from '@libs/common/src/constants/config';
 import compression from '@fastify/compress';
-import secureSession from '@fastify/secure-session';
+import fastifySession from '@fastify/session';
+import fastifyCookie from '@fastify/cookie';
+import { Logger } from '@nestjs/common';
 
 export class FastifyServer {
   private app: NestFastifyApplication;
@@ -49,8 +50,9 @@ export class FastifyServer {
       encodings: ['gzip', 'deflate'],
     });
 
-    await this.app.register(secureSession, {
-      key: configService.get('sessionKeys', { infer: true }),
+    await this.app.register(fastifyCookie);
+    await this.app.register(fastifySession, {
+      secret: configService.get('sessionKeys', { infer: true }),
       cookie: {
         path: '/',
         httpOnly: true,
@@ -62,9 +64,14 @@ export class FastifyServer {
   }
 
   async run(): Promise<void> {
-    Logger.log(`NODE_ENV is ${process.env.NODE_ENV}`);
-    Logger.log(`running in ${process.env.HOST_IP}:${process.env.HOST_PORT}`);
-    await this.app.listen(Number(process.env.HOST_PORT), process.env.HOST_IP);
+    await this.app
+      .listen(Number(process.env.HOST_PORT), process.env.HOST_IP)
+      .then(() => {
+        Logger.log(`NODE_ENV is ${process.env.NODE_ENV}`);
+        Logger.log(
+          `running in ${process.env.HOST_IP}:${process.env.HOST_PORT}`,
+        );
+      });
   }
 
   async close(): Promise<void> {
@@ -76,4 +83,5 @@ export class FastifyServer {
   //   const keyBuffer = fs.readFileSync('secret-key');
   //   return keyBuffer.toString('hex');
   // }
+  // secret key is created by  fastify-secure-session
 }
