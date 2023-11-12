@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  SERVER_ERROR_CODE,
-  SERVER_ERROR_CODE_MESSAGE,
+  ServerErrorCode,
+  ServerErrorCodeMessage,
 } from '@libs/common/src/error/server-error-code';
 import { ServerError } from '@libs/common/src/error/server-error';
 import { HttpStatus } from '@nestjs/common';
@@ -14,8 +14,9 @@ enum ResultType {
 export class ApiResponse<S> {
   @ApiProperty() private readonly result: ResultType;
   @ApiPropertyOptional() private readonly code?: number;
-  @ApiPropertyOptional() private readonly error?: ServerError;
   @ApiPropertyOptional() private readonly data?: S;
+
+  private readonly error?: ServerError;
 
   constructor(
     result: ResultType,
@@ -33,11 +34,11 @@ export class ApiResponse<S> {
     return new ApiResponse<T>(ResultType.OK, HttpStatus.OK, data ?? null);
   }
 
-  static error(errorCode: SERVER_ERROR_CODE): ApiResponse<null> {
+  static error(errorCode: ServerErrorCode): ApiResponse<null> {
     const errorMessage =
-      SERVER_ERROR_CODE_MESSAGE[errorCode] ??
-      Object.keys(SERVER_ERROR_CODE).find(
-        (key) => SERVER_ERROR_CODE[key] === errorCode,
+      ServerErrorCodeMessage[errorCode] ??
+      Object.keys(ServerErrorCode).find(
+        (key) => ServerErrorCode[key] === errorCode,
       );
 
     return new ApiResponse<null>(

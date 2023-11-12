@@ -1,13 +1,13 @@
 import {
-  SERVER_ERROR_CODE,
-  SERVER_ERROR_CODE_MESSAGE,
+  ServerErrorCode,
+  ServerErrorCodeMessage,
 } from '@libs/common/src/error/server-error-code';
 import { InternalServerErrorException } from '@nestjs/common';
 
 export class ServerErrorException extends InternalServerErrorException {
-  constructor(public code: SERVER_ERROR_CODE) {
+  constructor(public code: ServerErrorCode) {
     super();
     this.code = code;
-    this.message = SERVER_ERROR_CODE_MESSAGE[code];
+    this.message = ServerErrorCodeMessage[code];
   }
 }

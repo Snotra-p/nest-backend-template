@@ -1,4 +1,4 @@
-export enum NODE_ENVIRONMENT {
+export enum NodeEnvironment {
   TEST = 'test',
   LOCAL = 'local',
   DEV = 'dev',
@@ -6,6 +6,10 @@ export enum NODE_ENVIRONMENT {
 }
 
 export enum DATABASE_NAME {
-  COMMON = 'common',
+  CORE = 'core',
   ADMIN = 'admin',
 }
+
+export const JWT_ACCESS_EXPIRES_IN = '1d';
+
+export const JWT_REFRESH_EXPIRES_IN = '7d';

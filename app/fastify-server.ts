@@ -1,21 +1,19 @@
-import {
-  DocumentBuilder,
-  SwaggerCustomOptions,
-  SwaggerModule,
-} from '@nestjs/swagger';
+import { RootModule } from './root.module';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { NestFactory } from '@nestjs/core';
-import { RootModule } from './root.module';
 import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from '@config/configuration';
-import { NODE_ENVIRONMENT } from '@libs/common/src/constants/config';
 import compression from '@fastify/compress';
-import fastifySession from '@fastify/session';
-import fastifyCookie from '@fastify/cookie';
 import { Logger } from '@nestjs/common';
+import {
+  DocumentBuilder,
+  SwaggerCustomOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
+import { EnvironmentVariables } from '@config/configuration';
+import { NodeEnvironment } from '@libs/common/src/constants/config';
 
 export class FastifyServer {
   private app: NestFastifyApplication;
@@ -28,19 +26,8 @@ export class FastifyServer {
 
     const configService = this.app.get(ConfigService<EnvironmentVariables>);
 
-    if (configService.get('env', { infer: true }) !== NODE_ENVIRONMENT.PROD) {
-      const swaggerConfig = new DocumentBuilder()
-        .setTitle('star Server')
-        .setDescription('API description')
-        .setVersion('1.0')
-        .build();
-
-      const document = SwaggerModule.createDocument(this.app, swaggerConfig);
-      SwaggerModule.setup('api-docs', this.app, document, {
-        swaggerOptions: {
-          persistAuthorization: true,
-        } as SwaggerCustomOptions,
-      });
+    if (configService.get('env', { infer: true }) !== NodeEnvironment.PROD) {
+      this._initSwaggerSettings(configService);
     }
 
     // confirm secret string from secret-key file
@@ -49,39 +36,44 @@ export class FastifyServer {
     await this.app.register(compression, {
       encodings: ['gzip', 'deflate'],
     });
-
-    await this.app.register(fastifyCookie);
-    await this.app.register(fastifySession, {
-      secret: configService.get('sessionKeys', { infer: true }),
-      cookie: {
-        path: '/',
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict', // csrf protection
-        maxAge: 86400000, // 1 day
-      },
-    });
   }
 
   async run(): Promise<void> {
-    await this.app
-      .listen(Number(process.env.HOST_PORT), process.env.HOST_IP)
-      .then(() => {
-        Logger.log(`NODE_ENV is ${process.env.NODE_ENV}`);
-        Logger.log(
-          `running in ${process.env.HOST_IP}:${process.env.HOST_PORT}`,
-        );
-      });
+    const configService = this.app.get(ConfigService<EnvironmentVariables>);
+    const ip = configService.get('ip', { infer: true });
+    const port = configService.get('port', { infer: true });
+
+    await this.app.listen(port, ip).then(() => {
+      Logger.log(`NODE_ENV is ${configService.get('env', { infer: true })}`);
+      Logger.log(`running in ${ip}:${port}`);
+    });
   }
 
   async close(): Promise<void> {
     await this.app.close();
   }
 
-  // ref : https://github.com/fastify/fastify-secure-session
-  // getSecretKeys(): string {
-  //   const keyBuffer = fs.readFileSync('secret-key');
-  //   return keyBuffer.toString('hex');
-  // }
-  // secret key is created by  fastify-secure-session
+  private _initSwaggerSettings(
+    configService: ConfigService<EnvironmentVariables>,
+  ): void {
+    const swaggerBuilder = new DocumentBuilder()
+      .setTitle('star Server')
+      .setDescription('API description')
+      .setVersion('1.0')
+      .addSecurity(
+        configService.get('env') === NodeEnvironment.DEV ? 'bearer' : 'apiKey',
+        configService.get('env') === NodeEnvironment.DEV
+          ? { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }
+          : { type: 'apiKey', name: 'token', in: 'header' },
+      );
+
+    const swaggerConfig = swaggerBuilder.build();
+
+    const document = SwaggerModule.createDocument(this.app, swaggerConfig);
+    SwaggerModule.setup('api-docs', this.app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+      } as SwaggerCustomOptions,
+    });
+  }
 }

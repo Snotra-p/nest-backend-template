@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Inject, Module } from '@nestjs/common';
 import { Redis as RedisClient } from 'ioredis';
 import { ConfigService } from '@nestjs/config';
 import { RedisService } from '@libs/database/src/redis/redis.service';
@@ -28,5 +28,16 @@ const Redis = require('ioredis');
       inject: [ConfigService],
     },
   ],
+  exports: [RedisClient],
 })
-export class RedisModule {}
+export class RedisModule {
+  constructor(@Inject(RedisClient) private readonly redisClient: RedisClient) {}
+
+  /**
+   * Handle process termination to close Redis connection properly
+   * it can be good for testing, don't need to manually close just app closed
+   */
+  async onModuleDestroy(): Promise<void> {
+    await this.redisClient.quit();
+  }
+}
