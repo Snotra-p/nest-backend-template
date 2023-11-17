@@ -14,6 +14,7 @@ import {
 } from '@nestjs/swagger';
 import { EnvironmentVariables } from '@config/configuration';
 import { NodeEnvironment } from '@libs/common/src/constants/config';
+import { SwaggerUiOptions } from '@nestjs/swagger/dist/interfaces/swagger-ui-options.interface';
 
 export class FastifyServer {
   private app: NestFastifyApplication;
@@ -73,7 +74,7 @@ export class FastifyServer {
     SwaggerModule.setup('api-docs', this.app, document, {
       swaggerOptions: {
         persistAuthorization: true,
-      } as SwaggerCustomOptions,
+      } as SwaggerUiOptions | SwaggerCustomOptions,
     });
   }
 }

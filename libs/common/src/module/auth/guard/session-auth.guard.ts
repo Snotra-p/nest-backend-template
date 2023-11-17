@@ -1,19 +1,21 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '@libs/common/src/module/auth/decorator/public.decorator';
 import { AuthService } from '@libs/common/src/module/auth/auth.service';
 import { Observable } from 'rxjs';
-import { AuthStrategy } from '@libs/common/src/module/auth/constants/auth.constants.enum';
+import { ContextProvider } from '@libs/common/src/context/context.provider';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard(AuthStrategy.JWT) {
+export class SessionAuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private authService: AuthService,
-  ) {
-    super();
-  }
+  ) {}
 
   canActivate(
     context: ExecutionContext,
@@ -22,9 +24,17 @@ export class JwtAuthGuard extends AuthGuard(AuthStrategy.JWT) {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) {
-      return true;
+
+    if (isPublic) return true;
+
+    const session = context.switchToHttp().getRequest().session;
+
+    if (!session.userId) {
+      throw new UnauthorizedException('SESSION NOT FOUND');
     }
-    return super.canActivate(context);
+
+    ContextProvider.setSessionData(session);
+
+    return true;
   }
 }

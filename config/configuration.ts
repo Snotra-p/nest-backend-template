@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 import {
-  DATABASE_NAME,
+  DatabaseName,
   NodeEnvironment,
 } from '@libs/common/src/constants/config';
 import { decode } from 'js-base64';
@@ -13,7 +13,7 @@ export type DatabaseConfig = {
   username: string;
   password: string;
   database: string;
-  name: DATABASE_NAME;
+  name: DatabaseName;
   entities: string[];
   synchronize: boolean;
 };
@@ -32,7 +32,7 @@ export type EnvironmentVariables = {
   env: string;
   ip: string;
   port: number;
-  database: Record<DATABASE_NAME, TypeOrmModuleOptions>;
+  database: Record<DatabaseName, TypeOrmModuleOptions>;
   redis: RedisConfig;
   sessionKeys: Buffer[];
   jwt: JwtKeys;
@@ -47,25 +47,25 @@ export const configuration = (): EnvironmentVariables => ({
     Buffer.from(process.env.SESSION_KEY_OLD, 'hex'),
   ],
   database: {
-    [DATABASE_NAME.CORE]: {
+    [DatabaseName.CORE]: {
       type: 'mysql',
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT, 10),
       username: process.env.DB_ID,
       password: process.env.DB_PW,
       name: 'default',
-      database: DATABASE_NAME.CORE,
+      database: DatabaseName.CORE,
       entities: ['dist/app/user/entities/*.entity.!(js.map){,+(ts,js)}'],
       synchronize: true,
     },
-    [DATABASE_NAME.ADMIN]: {
+    [DatabaseName.ADMIN]: {
       type: 'mysql',
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT, 10),
       username: process.env.DB_ID,
       password: process.env.DB_PW,
       name: 'admin',
-      database: DATABASE_NAME.ADMIN,
+      database: DatabaseName.ADMIN,
       entities: ['dist/app/user/entities/*.entity.!(js.map){,+(ts,js)}'],
       synchronize: true,
     },

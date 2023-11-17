@@ -1,15 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  ServerErrorCode,
-  ServerErrorCodeMessage,
-} from '@libs/common/src/error/server-error-code';
+import { ServerErrors } from '@libs/common/src/error/server-error-code';
 import { ServerError } from '@libs/common/src/error/server-error';
-import { HttpStatus } from '@nestjs/common';
+import { ServerErrorCode } from '@libs/common/src/error/type/server-error.type';
 
-enum ResultType {
-  OK,
-  ERROR,
-}
+const ResultType = {
+  OK: 'OK',
+  ERROR: 'ERROR',
+} as const;
+
+type ResultType = (typeof ResultType)[keyof typeof ResultType];
 
 export class ApiResponse<S> {
   @ApiProperty() private readonly result: ResultType;
@@ -20,7 +19,7 @@ export class ApiResponse<S> {
 
   constructor(
     result: ResultType,
-    code?: HttpStatus,
+    code?: number,
     data?: S,
     error?: ServerError,
   ) {
@@ -31,21 +30,15 @@ export class ApiResponse<S> {
   }
 
   static ok<T>(data?: T): ApiResponse<T> {
-    return new ApiResponse<T>(ResultType.OK, HttpStatus.OK, data ?? null);
+    return new ApiResponse<T>(ResultType.OK, 0, data ?? null);
   }
 
   static error(errorCode: ServerErrorCode): ApiResponse<null> {
-    const errorMessage =
-      ServerErrorCodeMessage[errorCode] ??
-      Object.keys(ServerErrorCode).find(
-        (key) => ServerErrorCode[key] === errorCode,
-      );
-
     return new ApiResponse<null>(
       ResultType.ERROR,
-      HttpStatus.INTERNAL_SERVER_ERROR,
+      ServerErrors[errorCode].httpStatus,
       null,
-      new ServerError(errorCode, errorMessage),
+      new ServerError(errorCode, ServerErrors[errorCode].message),
     );
   }
 }

@@ -1,10 +1,11 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ServerErrorException } from './server-error-exception';
 import { HttpAdapterHost } from '@nestjs/core';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
+import { ErrorBody } from '@libs/common/src/error/type/server-error.type';
 
 @Injectable()
-export class AllErrorHandler {
+export class ServerErrorHandler {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
   serverExceptionHandle(
     exception: ServerErrorException,
@@ -13,12 +14,13 @@ export class AllErrorHandler {
     const { httpAdapter } = this.httpAdapterHost;
     const request = ctx.getResponse<Request>();
 
-    const body = {
-      statusCode: exception.code,
-      message: exception.message,
+    const body: ErrorBody = {
+      code: exception.customErrorCode,
+      timestamp: new Date().toISOString(),
       path: request.url,
+      message: exception.message,
     };
-    httpAdapter.reply(request, body, HttpStatus.OK);
+    httpAdapter.reply(request, body, exception.getStatus());
     Logger.error(exception.stack);
   }
 }

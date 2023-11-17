@@ -1,8 +1,7 @@
-import { EntityManager, EntityTarget, SelectQueryBuilder } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { ContextProvider } from '@libs/common/src/context/context.provider';
 
-export abstract class BaseRepository<T> {
-  private readonly target: EntityTarget<T>;
+export abstract class BaseRepository<T> extends Repository<T> {
   protected readonly entityAlias: string;
   protected readonly entityManager: EntityManager;
 
@@ -10,15 +9,12 @@ export abstract class BaseRepository<T> {
     entityClass: new () => T,
     entityManager: EntityManager,
   ) {
+    const dataSourceName = entityManager.connection.name;
+    const queryRunner = ContextProvider.getQueryRunner(dataSourceName);
+    const manager = queryRunner ? queryRunner.manager : entityManager;
+    const target = manager.getRepository(entityClass).target;
+    super(target, manager, manager.queryRunner);
     this.entityAlias =
       entityManager.getRepository(entityClass).metadata.tableName;
-    this.entityManager = entityManager;
-    this.target = entityManager.getRepository(entityClass).target;
-  }
-
-  protected getQueryBuilder(dataSource?: string): SelectQueryBuilder<T> {
-    const queryRunner = ContextProvider.getQueryRunner(dataSource);
-    const manager = queryRunner ? queryRunner.manager : this.entityManager;
-    return manager.createQueryBuilder<T>(this.target, this.entityAlias);
   }
 }

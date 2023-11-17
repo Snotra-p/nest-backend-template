@@ -1,13 +1,21 @@
-export enum AUTH_STRATEGY {
-  JWT = 'jwt',
-  SESSION = 'session',
-}
+import { ConstValue } from '@libs/common/src/base/util-type';
 
-export enum RoleType {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-}
-export enum TokenType {
-  ACCESS = 'ACCESS',
-  REFRESH = 'REFRESH',
-}
+export const AuthStrategy = {
+  JWT: 'jwt',
+  SESSION: 'session',
+};
+export type AuthStrategy = ConstValue<typeof AuthStrategy>;
+
+export const RoleType = {
+  USER: 'USER',
+  ADMIN: 'ADMIN',
+};
+
+export type RoleType = ConstValue<typeof RoleType>;
+
+export const TokenType = {
+  ACCESS: 'ACCESS',
+  REFRESH: 'REFRESH',
+};
+
+export type TokenType = ConstValue<typeof TokenType>;

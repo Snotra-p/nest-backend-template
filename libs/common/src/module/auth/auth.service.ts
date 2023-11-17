@@ -1,34 +1,25 @@
 import { Injectable } from '@nestjs/common';
+import { AuthLoginOutDto } from '@libs/common/src/module/auth/dto/auth-login-out.dto';
+import { AuthLoginInDto } from '@libs/common/src/module/auth/dto/auth-login-in.dto';
+import { ContextProvider } from '@libs/common/src/context/context.provider';
 
 @Injectable()
 export class AuthService {
-  // constructor(private readonly jwtService: JwtService) {}
+  // private readonly jwtProvider: JwtProvider
+  constructor() {}
   //
-  // async validateUser(
-  //   username: string,
-  //   password: string,
-  // ): Promise<AuthLoginOutDto> {
-  //   const accessPayload = {
-  //     id: 1,
-  //     type: TokenType.ACCESS,
-  //     role: RoleType.USER,
-  //   } as AuthPayload;
-  //
-  //   const refreshPayload = {
-  //     id: 1,
-  //     type: TokenType.REFRESH,
-  //     role: RoleType.USER,
-  //   } as AuthPayload;
-  //
-  //   const [accessToken, refreshToken] = await Promise.all([
-  //     this.jwtService.signAsync(accessPayload, {
-  //       expiresIn: JWT_ACCESS_EXPIRES_IN,
-  //     }),
-  //     this.jwtService.signAsync(refreshPayload, {
-  //       expiresIn: JWT_REFRESH_EXPIRES_IN,
-  //     }),
-  //   ]);
-  //
-  //   return AuthLoginOutDto.of({ accessToken, refreshToken });
-  // }
+  async loginWithSession(
+    authLoginInDto: AuthLoginInDto,
+  ): Promise<AuthLoginOutDto> {
+    const { email, password } = authLoginInDto;
+    if (await this.validateUser(email, password)) {
+      ContextProvider.setSessionData({ userId: 1 });
+    }
+
+    return;
+  }
+
+  async validateUser(email: string, password: string): Promise<boolean> {
+    return true;
+  }
 }

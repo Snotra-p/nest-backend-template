@@ -7,33 +7,34 @@ import {
   Logger,
 } from '@nestjs/common';
 
-import { AllErrorHandler } from '../error/all-error-handler';
-import { ServerErrorException } from '../error/server-error-exception';
+import { ServerErrorHandler } from '../error/server-error-handler';
 import { HttpAdapterHost } from '@nestjs/core';
+import { ServerErrorException } from '@libs/common/src/error/server-error-exception';
+import { ErrorBody } from '@libs/common/src/error/type/server-error.type';
 
 @Catch(Error)
 export class AllExceptionFilter implements ExceptionFilter {
   constructor(
     private readonly httpAdapterHost: HttpAdapterHost,
-    private errorHandler: AllErrorHandler,
+    private readonly errorHandler: ServerErrorHandler,
   ) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const { httpAdapter } = this.httpAdapterHost;
 
-    const httpStatus =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+    if (exception instanceof ServerErrorException) {
+      return this.errorHandler.serverExceptionHandle(exception, ctx);
+    }
 
     if (exception instanceof HttpException) {
-      const responseBody = {
-        statusCode: httpStatus,
+      const httpStatus = exception.getStatus();
+
+      const responseBody: ErrorBody = {
+        code: 0,
         timestamp: new Date().toISOString(),
         path: httpAdapter.getRequestUrl(ctx.getRequest()),
-        message: exception.message,
-        error: exception.name,
+        message: exception.message || exception.name,
       };
 
       return httpAdapter.reply(
@@ -43,12 +44,10 @@ export class AllExceptionFilter implements ExceptionFilter {
       );
     }
 
-    if (exception instanceof ServerErrorException) {
-      return this.errorHandler.serverExceptionHandle(exception, ctx);
-    }
-
-    const responseBody = {
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    const responseBody: ErrorBody = {
+      code: 500,
+      timestamp: new Date().toISOString(),
+      path: httpAdapter.getRequestUrl(ctx.getRequest()),
       message: 'critical error occur',
     };
 

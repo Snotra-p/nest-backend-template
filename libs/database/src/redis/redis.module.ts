@@ -13,8 +13,8 @@ const Redis = require('ioredis');
       provide: RedisClient,
       useFactory: (
         configService: ConfigService<EnvironmentVariables>,
-      ): unknown => {
-        return new Redis({
+      ): unknown =>
+        new Redis({
           ...configService.get('redis'),
           retryStrategy: (times: number): number | null => {
             if (times > 10) {
@@ -23,8 +23,7 @@ const Redis = require('ioredis');
             return Math.min(times * 50, 2000);
           },
           maxRetriesPerRequest: null,
-        });
-      },
+        }),
       inject: [ConfigService],
     },
   ],

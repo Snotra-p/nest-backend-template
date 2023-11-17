@@ -2,7 +2,7 @@ import { DynamicModule, Global, Inject, OnModuleDestroy } from '@nestjs/common';
 import { getDataSourceToken, TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from '@config/configuration';
-import { DATABASE_NAME } from '@libs/common/src/constants/config';
+import { DatabaseName } from '@libs/common/src/constants/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 import { DataSource } from 'typeorm';
 
@@ -11,15 +11,14 @@ const DATABASE_SOURCES = Symbol('DATABASE_SOURCES');
 export class TypeOrmCustomModule implements OnModuleDestroy {
   constructor(
     @Inject(DATABASE_SOURCES) private readonly dataSources: DataSource[],
-  ) {} //
-  // })
+  ) {}
   static registerAsync(): DynamicModule {
     return {
       module: TypeOrmCustomModule,
       global: true,
       imports: [
         TypeOrmModule.forRootAsync({
-          name: DATABASE_NAME.CORE,
+          name: DatabaseName.CORE,
           useFactory: (
             configService: ConfigService<EnvironmentVariables>,
           ): TypeOrmModuleOptions =>
@@ -28,7 +27,7 @@ export class TypeOrmCustomModule implements OnModuleDestroy {
         }),
 
         TypeOrmModule.forRootAsync({
-          name: DATABASE_NAME.ADMIN,
+          name: DatabaseName.ADMIN,
           useFactory: (
             configService: ConfigService<EnvironmentVariables>,
           ): TypeOrmModuleOptions =>
@@ -40,7 +39,7 @@ export class TypeOrmCustomModule implements OnModuleDestroy {
         {
           provide: DATABASE_SOURCES,
           useFactory: (...dataSources: DataSource[]) => dataSources,
-          inject: Object.values(DATABASE_NAME).map((name) =>
+          inject: Object.values(DatabaseName).map((name) =>
             getDataSourceToken(name),
           ),
         },

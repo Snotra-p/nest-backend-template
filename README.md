@@ -9,6 +9,7 @@ simple 3-layered mvc architecture
 
 
 
+
 for security, using jwt token or session
 
 jwt using ES256 algorithm for security.
@@ -61,3 +62,13 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+
+## TODO List
+
+- [x] fastify server base apply
+- [ ] Swagger Api Document
+- [ ] Response Dto mapper
+- [ ] Typeorm Transaction architecture
+- [ ] express server base apply
+

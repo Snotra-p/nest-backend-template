@@ -7,12 +7,12 @@ import { EnvironmentVariables } from '@config/configuration';
 import { AuthPayload } from '@libs/common/src/module/auth/type/auth-payload';
 import { NodeEnvironment } from '@libs/common/src/constants/config';
 import {
-  AUTH_STRATEGY,
+  AuthStrategy,
   TokenType,
 } from '@libs/common/src/module/auth/constants/auth.constants.enum';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, AUTH_STRATEGY.JWT) {
+export class JwtStrategy extends PassportStrategy(Strategy, AuthStrategy.JWT) {
   constructor(configService: ConfigService<EnvironmentVariables>) {
     super({
       jwtFromRequest:

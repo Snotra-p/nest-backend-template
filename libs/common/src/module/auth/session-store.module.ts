@@ -8,12 +8,12 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 import fastifySession, { FastifySessionOptions } from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
-import { Redis as RedisClient } from 'ioredis';
 import { RedisModule } from '@libs/database/src/redis/redis.module';
+import { Redis as RedisClient } from 'ioredis';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from '@config/configuration';
-import RedisStore from 'connect-redis';
 import { NodeEnvironment } from '@libs/common/src/constants/config';
+import RedisStore from 'connect-redis';
 
 const FASTIFY_SESSION_OPTIONS = Symbol('FASTIFY_SESSION_OPTIONS');
 
@@ -34,7 +34,7 @@ export class SessionStoreModule implements NestModule {
   configure(): void {
     const fastifyInstance = this.adapterHost?.httpAdapter?.getInstance();
     if (!fastifyInstance) {
-      return;
+      throw new Error('fastify not found');
     }
 
     fastifyInstance.register(fastifyCookie);
@@ -42,6 +42,10 @@ export class SessionStoreModule implements NestModule {
   }
 
   static registerAsync(): DynamicModule {
+    return this._getRedisStore();
+  }
+
+  private static _getRedisStore(): DynamicModule {
     return {
       imports: [RedisModule],
       module: SessionStoreModule,
@@ -59,6 +63,7 @@ export class SessionStoreModule implements NestModule {
               sameSite: 'strict', // csrf protection
               maxAge: 86400000, // 1 day
             },
+            saveUninitialized: false,
             secret: configService.get('sessionKeys', { infer: true }),
             store: new RedisStore({
               client: redisClient,
