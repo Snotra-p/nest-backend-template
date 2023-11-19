@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RootModule } from '../../../../../../../app/root.module';
+import { HealthModule } from '@libs/common/src/module/health-checker/health-module';
 
 describe('base Test file for specific module', () => {
   let moduleFixture: TestingModule;
 
   beforeAll(async () => {
     moduleFixture = await Test.createTestingModule({
-      imports: [RootModule],
+      imports: [HealthModule],
     }).compile();
   });
 

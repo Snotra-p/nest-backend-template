@@ -21,9 +21,7 @@ const FASTIFY_SESSION_OPTIONS = Symbol('FASTIFY_SESSION_OPTIONS');
  * this is only used for fastify
  */
 @Global()
-@Module({
-  providers: [],
-})
+@Module({})
 export class SessionStoreModule implements NestModule {
   constructor(
     private readonly adapterHost: HttpAdapterHost,

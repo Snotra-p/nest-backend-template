@@ -55,7 +55,7 @@ export const configuration = (): EnvironmentVariables => ({
       password: process.env.DB_PW,
       name: 'default',
       database: DatabaseName.CORE,
-      entities: ['dist/app/user/entities/*.entity.!(js.map){,+(ts,js)}'],
+      entities: ['dist/app/*/entities/*.entity.!(js.map){,+(ts,js)}'],
       synchronize: true,
     },
     [DatabaseName.ADMIN]: {
@@ -66,7 +66,7 @@ export const configuration = (): EnvironmentVariables => ({
       password: process.env.DB_PW,
       name: 'admin',
       database: DatabaseName.ADMIN,
-      entities: ['dist/app/user/entities/*.entity.!(js.map){,+(ts,js)}'],
+      entities: ['dist/app/*/entities/*.entity.!(js.map){,+(ts,js)}'],
       synchronize: true,
     },
   },

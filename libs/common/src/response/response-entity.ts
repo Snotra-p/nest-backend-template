@@ -1,7 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ServerErrors } from '@libs/common/src/error/server-error-code';
+import {
+  ServerErrorCode,
+  ServerErrors,
+} from '@libs/common/src/error/server-error-code';
 import { ServerError } from '@libs/common/src/error/server-error';
-import { ServerErrorCode } from '@libs/common/src/error/type/server-error.type';
 
 const ResultType = {
   OK: 'OK',
@@ -10,7 +12,7 @@ const ResultType = {
 
 type ResultType = (typeof ResultType)[keyof typeof ResultType];
 
-export class ApiResponse<S> {
+export class ResponseEntity<S> {
   @ApiProperty() private readonly result: ResultType;
   @ApiPropertyOptional() private readonly code?: number;
   @ApiPropertyOptional() private readonly data?: S;
@@ -29,15 +31,15 @@ export class ApiResponse<S> {
     this.error = error;
   }
 
-  static ok<T>(data?: T): ApiResponse<T> {
-    return new ApiResponse<T>(ResultType.OK, 0, data ?? null);
+  static ok<T>(data?: T): ResponseEntity<T> {
+    return new ResponseEntity<T>(ResultType.OK, 0, data ?? undefined);
   }
 
-  static error(errorCode: ServerErrorCode): ApiResponse<null> {
-    return new ApiResponse<null>(
+  static error(errorCode: ServerErrorCode): ResponseEntity<undefined> {
+    return new ResponseEntity<undefined>(
       ResultType.ERROR,
       ServerErrors[errorCode].httpStatus,
-      null,
+      undefined,
       new ServerError(errorCode, ServerErrors[errorCode].message),
     );
   }

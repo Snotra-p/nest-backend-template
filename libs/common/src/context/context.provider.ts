@@ -1,6 +1,6 @@
 import { ClsServiceManager } from 'nestjs-cls';
 import { QueryRunner } from 'typeorm';
-import { SESSION_ORIGINAL_KEY } from '@libs/common/src/module/auth/constants/auth.constants';
+import { SESSION_DATA_KEY } from '@libs/common/src/module/auth/constants/auth.constants';
 import { SessionData } from '@libs/common/src/module/auth/type/session-data';
 
 export class ContextProvider {
@@ -13,16 +13,11 @@ export class ContextProvider {
   }
 
   static getSessionData(): SessionData {
-    return ContextProvider.get(SESSION_ORIGINAL_KEY);
+    return ContextProvider.get(SESSION_DATA_KEY);
   }
 
   static setSessionData(data: SessionData): void {
-    const session = ContextProvider.getSessionData();
-    if (session) {
-      Object.assign(session, data);
-    }
-
-    ContextProvider.set(SESSION_ORIGINAL_KEY, data);
+    ContextProvider.set(SESSION_DATA_KEY, data);
   }
 
   static getQueryRunner(dbName: string): QueryRunner {

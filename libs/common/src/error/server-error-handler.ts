@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ServerErrorException } from './server-error-exception';
 import { HttpAdapterHost } from '@nestjs/core';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
-import { ErrorBody } from '@libs/common/src/error/type/server-error.type';
+import { ErrorBody } from '@libs/common/src/response/error-body';
 
 @Injectable()
 export class ServerErrorHandler {

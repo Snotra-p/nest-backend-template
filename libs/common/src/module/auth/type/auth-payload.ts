@@ -5,8 +5,8 @@ import {
 
 /**
  * @description
- * SessionPayload is a type that is used to store the user's information
- * it can be jwt payload or session's payload
+ * AuthPayload is a type that is used to store the user's information
+ * it can be jwt payload
  */
 export type AuthPayload = {
   id: number;

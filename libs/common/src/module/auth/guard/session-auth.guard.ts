@@ -9,6 +9,8 @@ import { IS_PUBLIC_KEY } from '@libs/common/src/module/auth/decorator/public.dec
 import { AuthService } from '@libs/common/src/module/auth/auth.service';
 import { Observable } from 'rxjs';
 import { ContextProvider } from '@libs/common/src/context/context.provider';
+import { SESSION_DATA_KEY } from '@libs/common/src/module/auth/constants/auth.constants';
+import { Session } from 'fastify';
 
 @Injectable()
 export class SessionAuthGuard implements CanActivate {
@@ -27,13 +29,11 @@ export class SessionAuthGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    const session = context.switchToHttp().getRequest().session;
+    const session: Session = context.switchToHttp().getRequest().session;
 
-    if (!session.userId) {
-      throw new UnauthorizedException('SESSION NOT FOUND');
-    }
+    if (!session.data) throw new UnauthorizedException('SESSION NOT FOUND');
 
-    ContextProvider.setSessionData(session);
+    ContextProvider.set(SESSION_DATA_KEY, session.data);
 
     return true;
   }

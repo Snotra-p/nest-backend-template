@@ -1,6 +1,8 @@
 import { HttpException } from '@nestjs/common';
-import { ServerErrors } from '@libs/common/src/error/server-error-code';
-import { ServerErrorKey } from '@libs/common/src/error/type/server-error.type';
+import {
+  ServerErrorKey,
+  ServerErrors,
+} from '@libs/common/src/error/server-error-code';
 
 export class ServerErrorException extends HttpException {
   readonly customErrorCode: number;

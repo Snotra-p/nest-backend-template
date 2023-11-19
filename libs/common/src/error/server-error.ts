@@ -1,4 +1,4 @@
-import { ServerErrorCode } from '@libs/common/src/error/type/server-error.type';
+import { ServerErrorCode } from '@libs/common/src/error/server-error-code';
 
 export class ServerError {
   private readonly code: ServerErrorCode;

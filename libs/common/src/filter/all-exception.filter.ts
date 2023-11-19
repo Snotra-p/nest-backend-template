@@ -10,7 +10,7 @@ import {
 import { ServerErrorHandler } from '../error/server-error-handler';
 import { HttpAdapterHost } from '@nestjs/core';
 import { ServerErrorException } from '@libs/common/src/error/server-error-exception';
-import { ErrorBody } from '@libs/common/src/error/type/server-error.type';
+import { ErrorBody } from '@libs/common/src/response/error-body';
 
 @Catch(Error)
 export class AllExceptionFilter implements ExceptionFilter {
