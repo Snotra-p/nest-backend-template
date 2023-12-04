@@ -1,9 +1,4 @@
-import { RootModule } from './root.module';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import { NestFactory } from '@nestjs/core';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ConfigService } from '@nestjs/config';
 import compression from '@fastify/compress';
 import { Logger } from '@nestjs/common';
@@ -13,19 +8,30 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 import { EnvironmentVariables } from '@config/configuration';
-import { NodeEnvironment } from '@libs/common/src/constants/config';
+import {
+  DatabaseName,
+  NodeEnvironment,
+} from '@libs/common/src/constants/config';
 import { SwaggerUiOptions } from '@nestjs/swagger/dist/interfaces/swagger-ui-options.interface';
+import { getDataSourceToken } from '@nestjs/typeorm';
+import { DataSourceManager } from '@libs/database/src/typeorm/data-source-manager';
 
 export class FastifyServer {
-  private app: NestFastifyApplication;
+  private app: NestFastifyApplication | undefined;
 
-  async init(): Promise<void> {
-    this.app = await NestFactory.create<NestFastifyApplication>(
-      RootModule,
-      new FastifyAdapter(),
-    );
+  async init(app: NestFastifyApplication): Promise<void> {
+    this.app = app;
+    if (!this.app) {
+      throw new Error('app is undefined');
+    }
 
     const configService = this.app.get(ConfigService<EnvironmentVariables>);
+    Object.values(DatabaseName)
+      .map((dbName) => this.app!.get(getDataSourceToken(dbName)))
+      .filter((dataSource) => !!dataSource)
+      .forEach((dataSource) => {
+        DataSourceManager.setDataSource(dataSource);
+      });
 
     if (configService.get('env', { infer: true }) !== NodeEnvironment.PROD) {
       this._initSwaggerSettings(configService);
@@ -40,9 +46,13 @@ export class FastifyServer {
   }
 
   async run(): Promise<void> {
+    if (!this.app) {
+      throw new Error('app is undefined');
+    }
+
     const configService = this.app.get(ConfigService<EnvironmentVariables>);
-    const ip = configService.get('ip', { infer: true });
-    const port = configService.get('port', { infer: true });
+    const ip = configService.get<number>('ip', { infer: true });
+    const port = configService.get<number>('port', { infer: true });
 
     await this.app.listen(port, ip).then(() => {
       Logger.log(`NODE_ENV is ${configService.get('env', { infer: true })}`);
@@ -51,6 +61,9 @@ export class FastifyServer {
   }
 
   async close(): Promise<void> {
+    if (!this.app) {
+      throw new Error('app is undefined');
+    }
     await this.app.close();
   }
 
@@ -69,6 +82,10 @@ export class FastifyServer {
       );
 
     const swaggerConfig = swaggerBuilder.build();
+
+    if (!this.app) {
+      throw new Error('app is undefined');
+    }
 
     const document = SwaggerModule.createDocument(this.app, swaggerConfig);
     SwaggerModule.setup('api-docs', this.app, document, {

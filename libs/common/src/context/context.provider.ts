@@ -2,6 +2,7 @@ import { ClsServiceManager } from 'nestjs-cls';
 import { QueryRunner } from 'typeorm';
 import { SESSION_DATA_KEY } from '@libs/common/src/module/auth/constants/auth.constants';
 import { SessionData } from '@libs/common/src/module/auth/type/session-data';
+import { DatabaseName } from '@libs/common/src/constants/config';
 
 export class ContextProvider {
   static get<T>(key: string | symbol): T {
@@ -25,6 +26,15 @@ export class ContextProvider {
   }
 
   static setQueryRunner(queryRunner: QueryRunner, dbName: string): void {
+    if (this.getQueryRunner(dbName)) return;
+
     ContextProvider.set(`${dbName}_qb`, queryRunner);
+  }
+
+  static startQueryRunners(validateDatabase: DatabaseName[]) {
+    return validateDatabase.map((dbName) => {
+      const queryRunner = ContextProvider.getQueryRunner(dbName);
+      return queryRunner;
+    });
   }
 }

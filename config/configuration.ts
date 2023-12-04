@@ -5,18 +5,7 @@ import {
 } from '@libs/common/src/constants/config';
 import { decode } from 'js-base64';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-
-export type DatabaseConfig = {
-  type: 'mysql' | 'pg';
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  database: string;
-  name: DatabaseName;
-  entities: string[];
-  synchronize: boolean;
-};
+import { ConfigModuleOptions } from '@nestjs/config';
 
 export type RedisConfig = {
   host: string;
@@ -39,20 +28,20 @@ export type EnvironmentVariables = {
 };
 
 export const configuration = (): EnvironmentVariables => ({
-  env: process.env.NODE_ENV,
-  ip: process.env.HOST_IP,
-  port: parseInt(process.env.HOST_PORT, 10),
+  env: process.env.NODE_ENV!,
+  ip: process.env.HOST_IP!,
+  port: parseInt(process.env.HOST_PORT!, 10),
   sessionKeys: [
-    Buffer.from(process.env.SESSION_KEY, 'hex'),
-    Buffer.from(process.env.SESSION_KEY_OLD, 'hex'),
+    Buffer.from(process.env.SESSION_KEY!, 'hex'),
+    Buffer.from(process.env.SESSION_KEY_OLD!, 'hex'),
   ],
   database: {
     [DatabaseName.CORE]: {
       type: 'mysql',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT, 10),
-      username: process.env.DB_ID,
-      password: process.env.DB_PW,
+      host: process.env.DB_HOST!,
+      port: parseInt(process.env.DB_PORT!, 10),
+      username: process.env.DB_ID!,
+      password: process.env.DB_PW!,
       name: 'default',
       database: DatabaseName.CORE,
       entities: ['dist/app/*/entities/*.entity.!(js.map){,+(ts,js)}'],
@@ -60,10 +49,10 @@ export const configuration = (): EnvironmentVariables => ({
     },
     [DatabaseName.ADMIN]: {
       type: 'mysql',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT, 10),
-      username: process.env.DB_ID,
-      password: process.env.DB_PW,
+      host: process.env.DB_HOST!,
+      port: parseInt(process.env.DB_PORT!, 10),
+      username: process.env.DB_ID!,
+      password: process.env.DB_PW!,
       name: 'admin',
       database: DatabaseName.ADMIN,
       entities: ['dist/app/*/entities/*.entity.!(js.map){,+(ts,js)}'],
@@ -71,12 +60,12 @@ export const configuration = (): EnvironmentVariables => ({
     },
   },
   redis: {
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT, 10),
+    host: process.env.REDIS_HOST!,
+    port: parseInt(process.env.REDIS_PORT!, 10),
   },
   jwt: {
-    privateKey: decode(process.env.JWT_PRIVATE_KEY),
-    publicKey: decode(process.env.JWT_PUBLIC_KEY),
+    privateKey: decode(process.env.JWT_PRIVATE_KEY!),
+    publicKey: decode(process.env.JWT_PUBLIC_KEY!),
   },
 });
 
@@ -96,11 +85,11 @@ export const validationSchema = Joi.object({
   JWT_PUBLIC_KEY: Joi.string().required(),
 });
 
-export const configModuleOptions = {
+export const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
   envFilePath:
     process.env.NODE_ENV === NodeEnvironment.PROD
-      ? null
+      ? []
       : `config/.${process.env.NODE_ENV}.env`,
   load: [configuration],
   validationSchema: validationSchema,

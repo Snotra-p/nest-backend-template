@@ -22,7 +22,7 @@ type ApiResponseDocsOptions = {
 };
 
 export const ApiResponseDocs = (
-  options?: ApiResponseDocsOptions,
+  options: ApiResponseDocsOptions,
 ): MethodDecorator => {
   const { type, summary, isArray, errors } = options ?? {};
 
@@ -32,7 +32,7 @@ export const ApiResponseDocs = (
   ];
 
   if (errors) {
-    decorators.push(ApiErrorDocs(options.errors));
+    decorators.push(ApiErrorDocs(errors));
   }
 
   if (!type) {

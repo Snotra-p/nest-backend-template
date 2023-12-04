@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  ServerErrorCode,
+  ServerErrorKey,
   ServerErrors,
 } from '@libs/common/src/error/server-error-code';
 import { ServerError } from '@libs/common/src/error/server-error';
@@ -35,12 +35,15 @@ export class ResponseEntity<S> {
     return new ResponseEntity<T>(ResultType.OK, 0, data ?? undefined);
   }
 
-  static error(errorCode: ServerErrorCode): ResponseEntity<undefined> {
+  static error(errorKey: ServerErrorKey): ResponseEntity<undefined> {
     return new ResponseEntity<undefined>(
       ResultType.ERROR,
-      ServerErrors[errorCode].httpStatus,
+      ServerErrors[errorKey].httpStatus,
       undefined,
-      new ServerError(errorCode, ServerErrors[errorCode].message),
+      new ServerError(
+        ServerErrors[errorKey].code,
+        ServerErrors[errorKey].message,
+      ),
     );
   }
 }

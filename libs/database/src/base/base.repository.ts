@@ -1,19 +1,17 @@
-import { EntityManager, Repository } from 'typeorm';
-import { ContextProvider } from '@libs/common/src/context/context.provider';
+import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
 
-export abstract class BaseRepository<T> extends Repository<T> {
+export abstract class BaseRepository<
+  T extends ObjectLiteral,
+> extends Repository<T> {
   protected readonly entityAlias: string;
-  protected readonly entityManager: EntityManager;
 
   protected constructor(
     entityClass: new () => T,
     entityManager: EntityManager,
   ) {
-    const dataSourceName = entityManager.connection.name;
-    const queryRunner = ContextProvider.getQueryRunner(dataSourceName);
-    const manager = queryRunner ? queryRunner.manager : entityManager;
-    const target = manager.getRepository(entityClass).target;
-    super(target, manager, manager.queryRunner);
+    // const dataSourceName = entityManager.connection.name;
+    const target = entityManager.getRepository(entityClass).target;
+    super(target, entityManager, entityManager.queryRunner);
     this.entityAlias =
       entityManager.getRepository(entityClass).metadata.tableName;
   }

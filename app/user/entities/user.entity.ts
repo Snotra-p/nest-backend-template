@@ -6,8 +6,8 @@ export class User {
     comment: '유저 아이디',
     unsigned: true,
   })
-  id: number;
+  id!: number;
 
   @Column({ comment: '방장 아이디', unsigned: true })
-  phoneNumber: number;
+  phoneNumber!: number;
 }

@@ -21,7 +21,7 @@ export class RedisService {
     return this.redisClient;
   }
 
-  getValue(key: string): Promise<string> {
+  getValue(key: string): Promise<string | null> {
     return this.redisClient.get(key);
   }
 

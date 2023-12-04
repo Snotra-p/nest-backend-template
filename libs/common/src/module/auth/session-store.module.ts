@@ -62,7 +62,7 @@ export class SessionStoreModule implements NestModule {
               maxAge: 86400000, // 1 day
             },
             saveUninitialized: false,
-            secret: configService.get('sessionKeys', { infer: true }),
+            secret: configService.get('sessionKeys', { infer: true })!,
             store: new RedisStore({
               client: redisClient,
             }),

@@ -22,7 +22,7 @@ export class TypeOrmCustomModule implements OnModuleDestroy {
           useFactory: (
             configService: ConfigService<EnvironmentVariables>,
           ): TypeOrmModuleOptions =>
-            configService.get('database.core', { infer: true }),
+            configService.get('database.core', { infer: true })!,
           inject: [ConfigService],
         }),
 
@@ -31,7 +31,7 @@ export class TypeOrmCustomModule implements OnModuleDestroy {
           useFactory: (
             configService: ConfigService<EnvironmentVariables>,
           ): TypeOrmModuleOptions =>
-            configService.get('database.admin', { infer: true }),
+            configService.get('database.admin', { infer: true })!,
           inject: [ConfigService],
         }),
       ],
