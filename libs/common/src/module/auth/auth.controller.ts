@@ -36,7 +36,10 @@ export class AuthController {
     @Session() session: FastifySession,
   ): Promise<ResponseEntity<unknown>> {
     const sessionData = await this.authService.loginWithSession(authLoginInDto);
+
+    // session create
     Object.assign(session, { data: sessionData });
+
     return ResponseEntity.ok();
   }
   // @ApiResponseDocs({
