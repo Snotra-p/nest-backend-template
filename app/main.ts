@@ -5,8 +5,11 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { RootModule } from './root.module';
+import { patchRepositoryManager } from '@libs/database/src/typeorm/patch-repository-manager';
 
 async function bootstrap(): Promise<void> {
+  patchRepositoryManager();
+
   const wasServer = new FastifyServer();
 
   const app = await NestFactory.create<NestFastifyApplication>(

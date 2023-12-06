@@ -46,6 +46,7 @@ export const configuration = (): EnvironmentVariables => ({
       database: DatabaseName.CORE,
       entities: ['dist/app/*/entities/*.entity.!(js.map){,+(ts,js)}'],
       synchronize: true,
+      // logging: ['query'],
     },
     [DatabaseName.ADMIN]: {
       type: 'mysql',

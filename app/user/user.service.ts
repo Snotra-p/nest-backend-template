@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
-import { Transactional } from '@libs/common/src/decorator/transactional.decorator';
+import { User } from './entities/user.entity';
+import { Transactional } from '@libs/database/src/typeorm/transactional.decorator';
 import { DatabaseName } from '@libs/common/src/constants/config';
 
 @Injectable()
@@ -10,23 +9,18 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   @Transactional(DatabaseName.CORE)
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+  async create(): Promise<User[]> {
+    const a = await this.userRepository.save(
+      {
+        phoneNumber: 123,
+      },
+      { reload: true },
+    );
 
-  findAll() {
-    return `This action returns all user`;
-  }
+    const b = await this.userRepository.save({
+      phoneNumber: 1234,
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return [a, b];
   }
 }
