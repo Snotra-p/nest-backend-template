@@ -31,7 +31,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       const httpStatus = exception.getStatus();
 
       const responseBody: ErrorBody = {
-        code: 0,
+        code: httpStatus,
         timestamp: new Date().toISOString(),
         path: httpAdapter.getRequestUrl(ctx.getRequest()),
         message: exception.message || exception.name,
