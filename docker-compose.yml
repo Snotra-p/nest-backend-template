@@ -1,0 +1,71 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo
+    volumes:
+      - ./infra/mongodb/config/mongod.conf:/etc/mongo/mongod.conf
+      - ./infra/mongodb/mongo/data:/var/lib/mongodb
+      - ./infra/mongodb/mongo/log:/var/log/mongodb
+      - ./infra/mongodb/secure:/var/lib/mongo/
+      - ./infra/mongodb/initiate_replica_set.sh:/initiate_replica_set.sh
+    container_name: mongo
+    ports:
+      - "30000:30000"
+    command: --config /etc/mongo/mongod.conf
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+      MONGO_INITDB_DATABASE: test
+    # depends_on:
+    #   - mongodb2
+
+  # mongodb2:
+  #   image: mongo
+  #   volumes:
+  #     - ./infra/mongodb/config/mongod2.conf:/etc/mongo/mongod.conf
+  #     - ./infra/mongodb/mongo2/data:/var/lib/mongodb
+  #     - ./infra/mongodb/mongo2/log:/var/log/mongodb
+  #     - ./infra/mongodb/secure:/var/lib/mongo/
+  #   container_name: mongodb2
+  #   ports:
+  #     - "30001:30001"
+  #   command: --config /etc/mongo/mongod.conf
+  #   # --wiredTigerCacheSizeGB 1.5
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: admin
+  #     MONGO_INITDB_ROOT_PASSWORD: 1234
+  #     MONGO_INITDB_DATABASE: test
+
+  # mongo:
+  #   image: mongo
+  #   volumes:
+  #     - ./infra/mongodb/config:/etc/mongo2
+  #     - ./infra/mongodb/mongo2/data:/var/lib/mongodb
+  #     - ./infra/mongodb/mongo2/log:/var/log/mongodb
+  #     - ./infra/mongodb/secure:/var/lib/mongo/
+  #   container_name: mongo
+  #   ports:
+  #     - 27018:27017
+  #   # --wiredTigerCacheSizeGB 1.5
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: admin
+  #     MONGO_INITDB_ROOT_PASSWORD: 1234
+  #     MONGO_INITDB_DATABASE: test
+  #   healthcheck:
+  #     test: test $$(mongosh --port 27017 --quiet --eval "try {rs.initiate({_id:'rs0',members:[{_id:0,host:\"mongo:27017\"}]})} catch(e) {rs.status().ok}") -eq 1
+  #     interval: 10s
+  #     start_period: 30s
+  #   command:
+  #     [
+  #       --replSet,
+  #       rs0,
+  #       --bind_ip_all,
+  #       --port,
+  #       "27017",
+  #       --config,
+  #       /etc/mongo2/mongod.conf,
+  #     ]
+
+networks:
+  default:
+    name: mongoCluster
