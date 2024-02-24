@@ -1,10 +1,14 @@
-import { BaseRepository } from '@libs/database/src/base/base.repository';
+import { BaseRepository } from '@libs/database/src/typeorm/base/base.repository';
 import { DataSource } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User } from '../entities/user.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DatabaseName } from '@libs/common/src/constants/config';
+import { IUserRepository } from './user.repository.interface';
 
-export class UserRepository extends BaseRepository<User> {
+export class TUserRepository
+  extends BaseRepository<User>
+  implements IUserRepository
+{
   constructor(
     @InjectDataSource(DatabaseName.CORE)
     protected readonly dataSource: DataSource,

@@ -16,18 +16,8 @@ export function Transactional(
     descriptor.value = async function (
       ...originMethodArgs: any[]
     ): Promise<PropertyDescriptor> {
-      const validateDatabase = databaseNames.filter((name) =>
-        Object.values(DatabaseName)
-          .filter((name) => !!name)
-          .includes(name),
-      );
-
-      if (validateDatabase.length === 0) {
-        throw new ServerErrorException(ServerErrorKey.DB_STATUS_INVALID);
-      }
-
       const queryRunners =
-        await TransactionManager.startQueryRunners(validateDatabase);
+        await TransactionManager.startQueryRunners(databaseNames);
 
       if (queryRunners.length === 0) {
         throw new ServerErrorException(ServerErrorKey.DB_STATUS_INVALID);
