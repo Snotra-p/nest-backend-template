@@ -10,7 +10,6 @@ import {
 import { ServerErrorHandler } from '../error/server-error-handler';
 import { HttpAdapterHost } from '@nestjs/core';
 import { ServerErrorException } from '@libs/common/src/error/server-error-exception';
-import { ErrorBody } from '@libs/common/src/response/error-body';
 
 @Catch(Error)
 export class AllExceptionFilter implements ExceptionFilter {
@@ -28,34 +27,19 @@ export class AllExceptionFilter implements ExceptionFilter {
     }
 
     if (exception instanceof HttpException) {
-      const httpStatus = exception.getStatus();
-
-      const responseBody: ErrorBody = {
-        code: httpStatus,
-        timestamp: new Date().toISOString(),
-        path: httpAdapter.getRequestUrl(ctx.getRequest()),
-        message: exception.message || exception.name,
-      };
-
-      return httpAdapter.reply(
-        ctx.getResponse<Response>(),
-        responseBody,
-        httpStatus,
-      );
+      return this.errorHandler.httpExceptionHandle(exception, ctx);
     }
-
-    const responseBody: ErrorBody = {
-      code: 500,
-      timestamp: new Date().toISOString(),
-      path: httpAdapter.getRequestUrl(ctx.getRequest()),
-      message: 'critical error occur',
-    };
 
     Logger.error((exception as Error).stack);
 
     return httpAdapter.reply(
       ctx.getResponse<Response>(),
-      responseBody,
+      {
+        code: 500,
+        timestamp: new Date().toISOString(),
+        path: httpAdapter.getRequestUrl(ctx.getRequest()),
+        message: 'critical error occur',
+      },
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }

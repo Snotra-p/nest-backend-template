@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { ServerErrorException } from './server-error-exception';
 import { HttpAdapterHost } from '@nestjs/core';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
@@ -22,5 +22,19 @@ export class ServerErrorHandler {
     };
     httpAdapter.reply(request, body, exception.getStatus());
     Logger.error(exception.stack);
+  }
+
+  httpExceptionHandle(exception: HttpException, ctx: HttpArgumentsHost): void {
+    const { httpAdapter } = this.httpAdapterHost;
+    const httpStatus = exception.getStatus();
+
+    const responseBody: ErrorBody = {
+      code: httpStatus,
+      timestamp: new Date().toISOString(),
+      path: httpAdapter.getRequestUrl(ctx.getRequest()),
+      message: exception.message || exception.name,
+    };
+
+    httpAdapter.reply(ctx.getResponse<Response>(), responseBody, httpStatus);
   }
 }
