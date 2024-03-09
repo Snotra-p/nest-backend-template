@@ -31,8 +31,8 @@
 //           'basic',
 //         )
 //         .build();
-//       const document = SwaggerModule.createDocument(this.app, config);
-//       SwaggerModule.setup('api-docs', this.app, document, {
+//       const prisma = SwaggerModule.createDocument(this.app, config);
+//       SwaggerModule.setup('api-docs', this.app, prisma, {
 //         swaggerOptions: {
 //           persistAuthorization: true,
 //         } as SwaggerCustomOptions,

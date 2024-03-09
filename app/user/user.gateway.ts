@@ -1,10 +1,13 @@
 import {
   MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
+import * as console from 'console';
 
 @WebSocketGateway(8081, {
   cors: {
@@ -12,7 +15,7 @@ import { Server } from 'socket.io';
   },
   transports: ['websocket'],
 })
-export class UserGateway {
+export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server | undefined;
   constructor() {}
@@ -24,5 +27,16 @@ export class UserGateway {
       event: 'identity',
       data: data,
     };
+  }
+
+  handleConnection(client: Socket, ...args: any[]): any {
+    console.log(client.connected);
+    console.log(args);
+    console.log('client connected');
+  }
+
+  handleDisconnect(client: Socket): any {
+    console.log(client);
+    console.log('client disconnected');
   }
 }

@@ -9,6 +9,8 @@ import { patchRepositoryManager } from '@libs/database/src/typeorm/patch-reposit
 import { UwIoMongoAdapter } from '@libs/common/src/module/websocket/uw-io-mongo-adapter';
 import { Collection, Document, MongoClient } from 'mongodb';
 import { Logger } from '@nestjs/common';
+import { MongoSocketIoConfig } from '@config/configuration';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap(): Promise<void> {
   patchRepositoryManager();
@@ -21,7 +23,10 @@ async function bootstrap(): Promise<void> {
   );
 
   // const uwsApp = initUws();
-  const mongoCollection = await initMongoClient();
+  const config = app
+    .get<ConfigService>(ConfigService)
+    .get<MongoSocketIoConfig>('mongo')!;
+  const mongoCollection = await initMongoClient(config);
 
   app.enableCors();
   app.useWebSocketAdapter(new UwIoMongoAdapter(mongoCollection));
@@ -58,23 +63,23 @@ async function createMongoCollection(
   }
 }
 
-async function initMongoClient(): Promise<Collection<Document>> {
-  const DB = 'mydb';
-  const COLLECTION = 'socket.io-adapter-events';
-  const MONGO_URI = 'mongodb://admin:1234@localhost:30000/?replicaSet=rs0';
+async function initMongoClient(
+  config: MongoSocketIoConfig,
+): Promise<Collection<Document>> {
+  const { database, uri, socketCollection } = config;
 
-  const mongoClient = new MongoClient(MONGO_URI);
+  const mongoClient = new MongoClient(uri);
 
   await mongoClient.connect();
 
-  const collection = mongoClient.db(DB).collection(COLLECTION);
+  const collection = mongoClient.db(database).collection(socketCollection);
 
   if (!collection) {
-    await createMongoCollection(mongoClient, DB, COLLECTION);
+    await createMongoCollection(mongoClient, database, socketCollection);
   }
   Logger.log('MongoDB adapter setup complete.');
 
-  return mongoClient.db(DB).collection(COLLECTION)!;
+  return mongoClient.db(database).collection(socketCollection)!;
 }
 
 bootstrap().then();

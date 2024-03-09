@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('user')
-export class User {
+export class UserEntity {
   @PrimaryGeneratedColumn({
     comment: '유저 아이디',
     unsigned: true,

@@ -1,6 +1,6 @@
 import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
 
-export abstract class BaseRepository<
+export abstract class TypeormBaseRepository<
   T extends ObjectLiteral,
 > extends Repository<T> {
   protected readonly entityAlias: string;

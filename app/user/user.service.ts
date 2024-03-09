@@ -1,16 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
+
 import { Transactional } from '@libs/database/src/typeorm/transactional.decorator';
 import { DatabaseName } from '@libs/common/src/constants/config';
 import {
-  IUserRepository,
+  UserRepository,
   userRepoToken,
 } from './repository/user.repository.interface';
+import { User } from './domain/user';
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(userRepoToken) private readonly userRepository: IUserRepository,
+    @Inject(userRepoToken) private readonly userRepository: UserRepository,
   ) {}
 
   @Transactional(DatabaseName.CORE)

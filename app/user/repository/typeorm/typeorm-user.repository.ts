@@ -1,19 +1,21 @@
-import { BaseRepository } from '@libs/database/src/typeorm/base/base.repository';
+import { TypeormBaseRepository } from '@libs/database/src/typeorm/base/typeorm-base-repository';
 import { DataSource } from 'typeorm';
-import { User } from '../entities/user.entity';
+
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DatabaseName } from '@libs/common/src/constants/config';
-import { IUserRepository } from './user.repository.interface';
+import { UserRepository } from '../user.repository.interface';
+import { UserEntity } from './user.entity';
+import { User } from '../../domain/user';
 
-export class TUserRepository
-  extends BaseRepository<User>
-  implements IUserRepository
+export class TypeormUserRepository
+  extends TypeormBaseRepository<UserEntity>
+  implements UserRepository
 {
   constructor(
     @InjectDataSource(DatabaseName.CORE)
     protected readonly dataSource: DataSource,
   ) {
-    super(User, dataSource.manager);
+    super(UserEntity, dataSource.manager);
   }
 
   async findByUserId(userId: number): Promise<User> {

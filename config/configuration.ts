@@ -17,6 +17,13 @@ export type JwtKeys = {
   publicKey: string;
 };
 
+export type MongoSocketIoConfig = {
+  connectHost: string;
+  uri: string;
+  database: string;
+  socketCollection: string;
+};
+
 export type EnvironmentVariables = {
   env: string;
   ip: string;
@@ -25,6 +32,7 @@ export type EnvironmentVariables = {
   redis: RedisConfig;
   sessionKeys: Buffer[];
   jwt: JwtKeys;
+  mongo: MongoSocketIoConfig;
 };
 
 export const configuration = (): EnvironmentVariables => ({
@@ -44,7 +52,7 @@ export const configuration = (): EnvironmentVariables => ({
       password: process.env.DB_PW!,
       name: 'default',
       database: DatabaseName.CORE,
-      entities: ['dist/app/*/entities/*.entity.!(js.map){,+(ts,js)}'],
+      entities: ['dist/app/*/repository/typeorm/*.entity.!(js.map){,+(ts,js)}'],
       synchronize: true,
       // logging: ['query'],
     },
@@ -56,7 +64,7 @@ export const configuration = (): EnvironmentVariables => ({
       password: process.env.DB_PW!,
       name: 'admin',
       database: DatabaseName.ADMIN,
-      entities: ['dist/app/*/entities/*.entity.!(js.map){,+(ts,js)}'],
+      entities: ['dist/app/*/repository/typeorm/*.entity.!(js.map){,+(ts,js)}'],
       synchronize: true,
     },
   },
@@ -67,6 +75,12 @@ export const configuration = (): EnvironmentVariables => ({
   jwt: {
     privateKey: decode(process.env.JWT_PRIVATE_KEY!),
     publicKey: decode(process.env.JWT_PUBLIC_KEY!),
+  },
+  mongo: {
+    connectHost: process.env.MONGO_CONNECT_HOST!,
+    uri: process.env.MONGO_URI!,
+    database: process.env.MONGO_DB_NAME!,
+    socketCollection: process.env.MONGO_SOCKET_COLLECTION!,
   },
 });
 
@@ -84,6 +98,10 @@ export const validationSchema = Joi.object({
   REDIS_PORT: Joi.number().required(),
   JWT_PRIVATE_KEY: Joi.string().required(),
   JWT_PUBLIC_KEY: Joi.string().required(),
+  MONGO_URI: Joi.string().required(),
+  MONGO_DB_NAME: Joi.string().required(),
+  MONGO_SOCKET_COLLECTION: Joi.string().required(),
+  MONGO_CONNECT_HOST: Joi.string().required(),
 });
 
 export const configModuleOptions: ConfigModuleOptions = {

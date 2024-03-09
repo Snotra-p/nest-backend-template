@@ -17,7 +17,7 @@ const Redis = require('ioredis');
         new Redis({
           ...configService.get('redis'),
           retryStrategy: (times: number): number | null => {
-            if (times > 10) {
+            if (times >= 5) {
               return 60 * 1000;
             }
             return Math.min(times * 50, 2000);
