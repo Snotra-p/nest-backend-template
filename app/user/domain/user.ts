@@ -1,10 +1,17 @@
-export class User {
+interface IUser {
+  id: string;
+  phoneNumber: string;
+}
+
+export class User implements IUser {
   id!: string;
 
   phoneNumber!: string;
 
-  constructor(user: User) {
-    this.id = user.id;
-    this.phoneNumber = user.phoneNumber;
+  static create(data: IUser): User {
+    const user = new User();
+    user.id = data.id;
+    user.phoneNumber = data.phoneNumber;
+    return user;
   }
 }

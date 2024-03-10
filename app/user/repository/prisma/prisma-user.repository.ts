@@ -8,11 +8,11 @@ export class PrismaUserRepository implements UserRepository {
 
   async findById(id: DomainId): Promise<User | undefined> {
     const value = await this.prisma.user.findUnique({ where: { id: id } });
-    return value ? new User(value) : undefined;
+    return value ? User.create(value) : undefined;
   }
 
   async save(user: User): Promise<User> {
     const value = await this.prisma.user.create({ data: user });
-    return new User(value);
+    return User.create(value);
   }
 }
