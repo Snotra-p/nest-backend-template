@@ -1,15 +1,18 @@
 import { UserRepository } from '../user.repository.interface';
 import { User } from '../../domain/user';
 import { PrismaService } from 'nestjs-prisma';
+import { DomainId } from '@libs/common/src/base/entity';
 
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findByUserId(userId: number): Promise<User> {
-    return Promise.resolve(new User());
+  async findById(id: DomainId): Promise<User | undefined> {
+    const value = await this.prisma.user.findUnique({ where: { id: id } });
+    return value ? new User(value) : undefined;
   }
 
-  save(user: Partial<User>): Promise<User> {
-    return Promise.resolve(new User());
+  async save(user: User): Promise<User> {
+    const value = await this.prisma.user.create({ data: user });
+    return new User(value);
   }
 }

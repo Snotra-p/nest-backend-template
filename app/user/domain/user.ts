@@ -1,5 +1,10 @@
 export class User {
-  id!: number;
+  id!: string;
 
-  phoneNumber!: number;
+  phoneNumber!: string;
+
+  constructor(user: User) {
+    this.id = user.id;
+    this.phoneNumber = user.phoneNumber;
+  }
 }

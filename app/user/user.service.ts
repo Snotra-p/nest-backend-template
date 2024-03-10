@@ -17,11 +17,11 @@ export class UserService {
   @Transactional(DatabaseName.CORE)
   async create(): Promise<User[]> {
     const a = await this.userRepository.save({
-      phoneNumber: 123,
+      phoneNumber: '123',
     });
 
     const b = await this.userRepository.save({
-      phoneNumber: 1234,
+      phoneNumber: '1234',
     });
 
     return [a, b];
